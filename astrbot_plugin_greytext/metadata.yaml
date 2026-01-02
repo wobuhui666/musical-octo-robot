@@ -1,0 +1,31 @@
+# AstrBot 插件元数据配置
+# 插件名称（唯一标识）
+name: greytext
+
+# 用于展示的插件名称
+display_name: 灰字发送
+
+# 插件作者
+author: AstrBot Plugin Developer
+
+# 插件描述
+desc: 灰字发送插件 - 通过 NapCat 的扩展 API 发送灰字消息到指定群
+
+# 插件版本
+version: 1.0.0
+
+# 插件仓库地址（可选）
+repo: ""
+
+# 插件主页（可选）
+homepage: ""
+
+# 支持的 AstrBot 版本（可选）
+astrbot_version: ">=4.0.0"
+
+# 插件标签（可选）
+tags:
+  - QQ
+  - 消息
+  - 灰字
+  - NapCat
