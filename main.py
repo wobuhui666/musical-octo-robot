@@ -40,7 +40,7 @@ class GreyTextPlugin(Star):
         self.context = context
 
     @filter.regex(r"^#hz\s+(.+?)\s+(\d+)$")
-    async def send_grey(self, event: AstrMessageEvent, match: re.Match):
+    async def send_grey(self, event: AstrMessageEvent):
         """
         发送灰字消息到指定群
 
@@ -48,6 +48,15 @@ class GreyTextPlugin(Star):
         """
         if not AIOCQHTTP_AVAILABLE:
             yield event.plain_result("错误：aiocqhttp 模块不可用，无法发送灰字消息")
+            return
+
+        # 从事件中获取消息字符串并手动进行正则匹配
+        msg = event.message_str
+        pattern = re.compile(r"^#hz\s+(.+?)\s+(\d+)$")
+        match = pattern.match(msg)
+        
+        if not match:
+            yield event.plain_result("命令格式错误，请使用: #hz <内容> <群号>")
             return
 
         # 提取正则匹配的内容和群号
