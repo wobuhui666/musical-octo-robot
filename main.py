@@ -4,10 +4,10 @@
 仿照 Yunzai-Bot 灰字插件逻辑，通过 NapCat 的扩展 API 发送灰字消息到指定群。
 
 使用方法：
-    #hz 内容 群号
+    hz 内容 群号
     
 例如：
-    #hz 这是一条灰字消息 123456789
+    hz 这是一条灰字消息 123456789
 """
 
 import re
@@ -39,29 +39,18 @@ class GreyTextPlugin(Star):
         super().__init__(context, config)
         self.context = context
 
-    @filter.regex(r"^#hz\s+(.+?)\s+(\d+)$")
-    async def send_grey(self, event: AstrMessageEvent):
+    @filter.command("hz")
+    async def send_grey(self, event: AstrMessageEvent, content: str, group_id: int):
         """
         发送灰字消息到指定群
 
-        命令格式: #hz 内容 群号
+        Args:
+            content(string): 灰字内容
+            group_id(number): 目标群号
         """
         if not AIOCQHTTP_AVAILABLE:
             yield event.plain_result("错误：aiocqhttp 模块不可用，无法发送灰字消息")
             return
-
-        # 从事件中获取消息字符串并手动进行正则匹配
-        msg = event.message_str
-        pattern = re.compile(r"^#hz\s+(.+?)\s+(\d+)$")
-        match = pattern.match(msg)
-        
-        if not match:
-            yield event.plain_result("命令格式错误，请使用: #hz <内容> <群号>")
-            return
-
-        # 提取正则匹配的内容和群号
-        content = match.group(1)
-        group_id = int(match.group(2))
 
         logger.info(f"准备发送灰字消息到群 {group_id}，内容: {content}")
 
@@ -178,10 +167,10 @@ class GreyTextPlugin(Star):
         help_text = """【灰字发送插件帮助】
 
 📝 命令格式：
-   #hz <内容> <群号>
+   hz <内容> <群号>
 
 📋 示例：
-   #hz 这是一条灰字消息 123456789
+   hz 这是一条灰字消息 123456789
 
 ⚠️ 注意事项：
 1. 需要 NapCat 或支持 send_packet API 的 QQ 协议端
