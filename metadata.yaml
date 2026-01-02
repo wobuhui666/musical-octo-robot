@@ -12,7 +12,7 @@ author: AstrBot Plugin Developer
 desc: 灰字发送插件 - 通过 NapCat 的扩展 API 发送灰字消息到指定群
 
 # 插件版本
-version: 1.0.0
+version: 1.0.1
 
 # 插件仓库地址（可选）
 repo: ""
