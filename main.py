@@ -40,6 +40,31 @@ class GreyTextPlugin(Star):
         self.context = context
         logger.info("灰字发送插件已加载")
 
+    @filter.event_message_type(filter.EventMessageType.ALL)
+    async def debug_all_messages(self, event: AstrMessageEvent):
+        """调试：捕获所有消息，检查消息内容"""
+        raw_msg = event.message_str
+        # 打印原始消息的十六进制表示，以便查看隐藏字符
+        hex_repr = raw_msg.encode('utf-8').hex()
+        logger.info(f"[DEBUG] 收到消息原始内容: '{raw_msg}'")
+        logger.info(f"[DEBUG] 消息十六进制: {hex_repr}")
+        logger.info(f"[DEBUG] 消息长度: {len(raw_msg)}")
+        
+        # 检查消息是否以 /hz 开头（忽略不可见字符）
+        stripped_msg = raw_msg.strip()
+        logger.info(f"[DEBUG] strip后的消息: '{stripped_msg}'")
+        
+        # 移除所有零宽字符后检查
+        import unicodedata
+        cleaned_msg = ''.join(c for c in raw_msg if unicodedata.category(c) not in ('Cf', 'Cc', 'Zs') or c == ' ')
+        logger.info(f"[DEBUG] 清理后的消息: '{cleaned_msg}'")
+        
+        # 检查是否匹配 hz 命令
+        if 'hz' in cleaned_msg.lower():
+            logger.info(f"[DEBUG] 消息包含 'hz'，应该触发命令")
+        
+        # 不阻止事件继续传递
+
     @filter.command("hz_test")
     async def test_plugin(self, event: AstrMessageEvent):
         """测试插件是否正常工作"""
