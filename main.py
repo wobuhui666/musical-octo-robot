@@ -38,6 +38,13 @@ class GreyTextPlugin(Star):
     def __init__(self, context: Context, config: dict | None = None):
         super().__init__(context, config)
         self.context = context
+        logger.info("灰字发送插件已加载")
+
+    @filter.command("hz_test")
+    async def test_plugin(self, event: AstrMessageEvent):
+        """测试插件是否正常工作"""
+        logger.info("hz_test 命令被触发")
+        yield event.plain_result("灰字插件测试成功！插件已正常加载。")
 
     @filter.command("hz")
     async def send_grey(self, event: AstrMessageEvent, content: str, group_id: int):
@@ -48,6 +55,8 @@ class GreyTextPlugin(Star):
             content(string): 灰字内容
             group_id(number): 目标群号
         """
+        logger.info(f"hz 命令被触发，content={content}, group_id={group_id}")
+        
         if not AIOCQHTTP_AVAILABLE:
             yield event.plain_result("错误：aiocqhttp 模块不可用，无法发送灰字消息")
             return
