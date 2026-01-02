@@ -47,15 +47,41 @@ class GreyTextPlugin(Star):
         yield event.plain_result("灰字插件测试成功！插件已正常加载。")
 
     @filter.command("hz")
-    async def send_grey(self, event: AstrMessageEvent, content: str, group_id: int):
+    async def send_grey(self, event: AstrMessageEvent):
         """
         发送灰字消息到指定群
-
-        Args:
-            content(string): 灰字内容
-            group_id(number): 目标群号
+        
+        使用方法: /hz <内容> <群号>
         """
-        logger.info(f"hz 命令被触发，content={content}, group_id={group_id}")
+        logger.info(f"hz 命令被触发，消息内容: {event.message_str}")
+        
+        # 手动解析参数
+        msg = event.message_str.strip()
+        # 移除命令前缀和命令名
+        parts = msg.split(maxsplit=2)  # 分成最多3部分: [命令, 内容, 群号] 或 [前缀+命令, 内容, 群号]
+        
+        logger.info(f"解析后的部分: {parts}")
+        
+        # 尝试提取 content 和 group_id
+        content = None
+        group_id = None
+        
+        if len(parts) >= 3:
+            # 格式: /hz 内容 群号
+            content = parts[1]
+            try:
+                group_id = int(parts[2])
+            except ValueError:
+                yield event.plain_result(f"错误：群号必须是纯数字，收到: {parts[2]}")
+                return
+        elif len(parts) == 2:
+            # 可能是: /hz 内容群号 (没有空格分隔)
+            # 或者只有一个参数
+            yield event.plain_result("用法错误！正确格式：/hz <内容> <群号>\n例如：/hz 你好 123456789")
+            return
+        else:
+            yield event.plain_result("用法错误！正确格式：/hz <内容> <群号>\n例如：/hz 你好 123456789")
+            return
         
         if not AIOCQHTTP_AVAILABLE:
             yield event.plain_result("错误：aiocqhttp 模块不可用，无法发送灰字消息")
@@ -175,16 +201,20 @@ class GreyTextPlugin(Star):
         """显示灰字发送帮助信息"""
         help_text = """【灰字发送插件帮助】
 
-📝 命令格式：
-   hz <内容> <群号>
+📝 命令格式（需要唤醒前缀，默认是 /）：
+   /hz <内容> <群号>
 
 📋 示例：
-   hz 这是一条灰字消息 123456789
+   /hz 这是一条灰字消息 123456789
+
+🧪 测试命令：
+   /hz_test  - 测试插件是否正常工作
 
 ⚠️ 注意事项：
 1. 需要 NapCat 或支持 send_packet API 的 QQ 协议端
 2. 群号必须是纯数字
 3. 机器人需要在目标群中
+4. 如果你的 AstrBot 配置了其他唤醒前缀，请使用对应前缀
 
 🔧 如果发送失败：
 - 检查协议端是否支持 send_packet API
